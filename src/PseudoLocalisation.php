@@ -49,11 +49,14 @@ class PseudoLocalisation
         $expectedLength = ceil(strlen($string) + strlen($string) * $this->expandBy);
         $perVowelExpansion = floor(($expectedLength- strlen($string)) / $numVowels) ;
 
+        if ($perVowelExpansion <= 0) {
+            return $string;
+        }
 
         $chars = array_map(function($letter) use ($perVowelExpansion) {
             $isVowel = in_array($letter, ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"]);
 
-            if (!$isVowel || $perVowelExpansion < 1) {
+            if (!$isVowel) {
                 return $letter;
             }
 
