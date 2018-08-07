@@ -2,6 +2,11 @@
 
 namespace PseudoLocalisation;
 
+/**
+ * Mapping of extended characters
+ *
+ * @package PseudoLocalisation
+ */
 class Extended
 {
 
