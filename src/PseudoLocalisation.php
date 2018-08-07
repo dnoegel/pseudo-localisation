@@ -15,14 +15,21 @@ class PseudoLocalisation
      */
     private $delim;
 
+    private $repeatableCharacters = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "ä", "ö", "ü", "Ä", "Ö", "ü"];
+
     /**
      * @param float $expandBy Percentage of expansion, e.g. 0.4 for 40%
      * @param array $delim Delimiter, by default [ and ]
+     * @param array $repeatableCharacters Characters that are allowed to repeat. Default: Vowels + Umlauts
      */
-    public function __construct($expandBy=0.4, $delim=["[", "]"])
+    public function __construct($expandBy = 0.4, $delim = ["[", "]"], $repeatableCharacters = [])
     {
         $this->expandBy = $expandBy;
         $this->delim = $delim;
+
+        if (!empty($repeatableCharacters)) {
+            $this->repeatableCharacters = $repeatableCharacters;
+        }
     }
 
     /**
@@ -69,26 +76,26 @@ class PseudoLocalisation
      */
     private function expandString($string): string
     {
-        $chars = preg_split('//', $string, null, PREG_SPLIT_NO_EMPTY);
-        $vowels = array_filter($chars, function($letter) {
-            return in_array($letter, ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"]);
+        $chars = preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY);
+        $repeatableCharacters = array_filter($chars, function ($letter) {
+            return in_array($letter, $this->repeatableCharacters);
         });
-        $numVowels = count($vowels);
+        $numRepeatable = count($repeatableCharacters);
         $expectedLength = ceil(strlen($string) + strlen($string) * $this->expandBy);
-        $perVowelExpansion = floor(($expectedLength- strlen($string)) / $numVowels) ;
+        $perCharacterExpansion = floor(($expectedLength - strlen($string)) / $numRepeatable);
 
-        if ($perVowelExpansion <= 0) {
+        if ($perCharacterExpansion <= 0) {
             return $string;
         }
 
-        $chars = array_map(function($letter) use ($perVowelExpansion) {
-            $isVowel = in_array($letter, ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"]);
+        $chars = array_map(function ($letter) use ($perCharacterExpansion) {
+            $isRepeatable = in_array($letter, $this->repeatableCharacters);
 
-            if (!$isVowel) {
+            if (!$isRepeatable) {
                 return $letter;
             }
 
-            return str_repeat($letter, $perVowelExpansion + 1);
+            return str_repeat($letter, $perCharacterExpansion + 1);
         }, $chars);
 
         return implode("", $chars);
