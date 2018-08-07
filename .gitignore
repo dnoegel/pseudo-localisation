@@ -1,1 +1,3 @@
-tests/_reports
+tests/_reports/*
+.idea/*
+vendor/*
