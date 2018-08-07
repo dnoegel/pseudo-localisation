@@ -102,12 +102,17 @@ class PseudoLocalisation
     private function expandString($string): string
     {
         $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
-        $repeatableCharacters = array_filter($chars, function ($letter) {
-            return in_array($letter, $this->repeatableCharacters);
-        });
+        $repeatableCharacters = array_filter($chars, [$this, 'isRepeatableCharacter']);
 
         $numRepeatable = count($repeatableCharacters);
         $originalLength = strlen($string);
+
+        // empty strings and those without repeatable characters cannot be expanded
+        if ($originalLength == 0 || $numRepeatable == 0) {
+            return $string;
+        }
+
+        // calculated average expansion needed
         $expectedLength = ceil($originalLength + $originalLength * $this->expandBy);
         $perCharacterExpansion = (int)floor(($expectedLength - $originalLength) / $numRepeatable);
 
@@ -115,10 +120,9 @@ class PseudoLocalisation
             return $string;
         }
 
+        // actual expansion
         $chars = array_map(function ($letter) use ($perCharacterExpansion) {
-            $isRepeatable = in_array($letter, $this->repeatableCharacters);
-
-            if (!$isRepeatable) {
+            if (!$this->isRepeatableCharacter($letter)) {
                 return $letter;
             }
 
@@ -128,4 +132,16 @@ class PseudoLocalisation
         return implode("", $chars);
 
     }
+
+    /**
+     * Checks if the given $letter is a char from the repeatableCharacters set
+     *
+     * @param $letter
+     * @return bool
+     */
+    private function isRepeatableCharacter($letter): bool
+    {
+        return in_array($letter, $this->repeatableCharacters);
+    }
+
 }
