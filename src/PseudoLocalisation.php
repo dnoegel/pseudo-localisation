@@ -21,7 +21,12 @@ class PseudoLocalisation
      */
     private $stringTranslation;
 
-    private $repeatableCharacters = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "ä", "ö", "ü", "Ä", "Ö", "ü"];
+    private $repeatableCharacters = [
+        "a", "e", "i", "o", "u",
+        "A", "E", "I", "O", "U",
+        "ä", "ö", "ü",
+        "Ä", "Ö", "Ü"
+    ];
 
     /**
      * @param float $expandBy Percentage of expansion, e.g. 0.4 for 40%
