@@ -1,0 +1,16 @@
+{
+    "name": "d.noegel/pseudo-localisation",
+    "authors": [
+        {
+            "name": "Daniel Nögel",
+            "email": "dn@shopware.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {"PseudoLocalisation\\": "src/"}
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    }
+}
