@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace PseudoLocalisation;
 
@@ -7,7 +8,7 @@ namespace PseudoLocalisation;
  *
  * @package PseudoLocalisation
  */
-class Extended
+class StringTranslation implements StringTranslationInterface
 {
 
     // https://en.wikipedia.org/wiki/Latin_Extended-A

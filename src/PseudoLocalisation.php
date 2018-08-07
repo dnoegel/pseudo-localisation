@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace PseudoLocalisation;
 
@@ -15,6 +16,11 @@ class PseudoLocalisation
      */
     private $delim;
 
+    /**
+     * @var $stringTranslation StringTranslationInterface
+     */
+    private $stringTranslation;
+
     private $repeatableCharacters = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "ä", "ö", "ü", "Ä", "Ö", "ü"];
 
     /**
@@ -30,6 +36,19 @@ class PseudoLocalisation
         if (!empty($repeatableCharacters)) {
             $this->repeatableCharacters = $repeatableCharacters;
         }
+
+        $this->stringTranslation = new StringTranslation();
+    }
+
+    /**
+     * If you want to use another mapping / string translation, you can set a custom implementation of the
+     * StringTranslationInterface here
+     *
+     * @param StringTranslationInterface $stringTranslation
+     */
+    public function setStringTranslation(StringTranslationInterface $stringTranslation)
+    {
+        $this->stringTranslation = $stringTranslation;
     }
 
     /**
@@ -62,9 +81,10 @@ class PseudoLocalisation
      */
     private function translateString($string): string
     {
-        $mapping = (new Extended())->getMapping();
+        $mapping = $this->stringTranslation->getMapping();
         $find = array_keys($mapping);
         $replace = array_values($mapping);
+
         return str_replace($find, $replace, $string);
     }
 
@@ -76,13 +96,15 @@ class PseudoLocalisation
      */
     private function expandString($string): string
     {
-        $chars = preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
         $repeatableCharacters = array_filter($chars, function ($letter) {
             return in_array($letter, $this->repeatableCharacters);
         });
+
         $numRepeatable = count($repeatableCharacters);
-        $expectedLength = ceil(strlen($string) + strlen($string) * $this->expandBy);
-        $perCharacterExpansion = floor(($expectedLength - strlen($string)) / $numRepeatable);
+        $originalLength = strlen($string);
+        $expectedLength = ceil($originalLength + $originalLength * $this->expandBy);
+        $perCharacterExpansion = (int)floor(($expectedLength - $originalLength) / $numRepeatable);
 
         if ($perCharacterExpansion <= 0) {
             return $string;
