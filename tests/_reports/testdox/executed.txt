@@ -1,0 +1,9 @@
+Localize
+ [x] Default localize
+ [x] Long localize
+ [x] Alternative dilimiter
+ [x] Repeatable characters
+ [x] Umlaut
+ [x] Custom string translation
+ [x] Multi line
+

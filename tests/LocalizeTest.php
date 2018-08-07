@@ -30,6 +30,14 @@ class LocalizeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals("->Ĥēēēēĺĺōōōō Ŵōōōōřĺď<-", $return);
     }
 
+    public function testRepeatableCharacters(): void
+    {
+        $localizer = new PseudoLocalisation(0.4, ["[", "]"], [" "]);
+
+        $return = $localizer->localize("Hello World");
+        $this->assertEquals("[Ĥēĺĺō      Ŵōřĺď]", $return);
+    }
+
 
     public function testUmlaut(): void
     {
